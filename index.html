@@ -544,12 +544,33 @@
     }
     .modal-close:hover { background: var(--gold); color: var(--charcoal); }
 
+    /* ── REGISTRATION FORM ── */
+    .modal { max-width: 520px; text-align: left; }
+    .reg-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: .4rem; }
+    .form-group label { font-size: .82rem; font-weight: 600; letter-spacing: .5px; color: var(--charcoal); text-transform: uppercase; }
+    .form-group input, .form-group select { padding: .7rem 1rem; border: 1.5px solid var(--sand); border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: .95rem; background: var(--cream); color: var(--charcoal); transition: border-color .2s; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--gold); }
+    .form-check { display: flex; align-items: flex-start; gap: .7rem; font-size: .88rem; color: #666; line-height: 1.5; }
+    .form-check input[type="checkbox"] { margin-top: 3px; accent-color: var(--gold); }
+    .form-error { color: var(--rust); font-size: .85rem; min-height: 1.2rem; font-weight: 500; }
+    .form-btns { display: flex; gap: 1rem; justify-content: flex-end; flex-wrap: wrap; }
+    .success-coupon { background: var(--cream); border-radius: 6px; padding: 1.5rem; }
+    .inscrit-card { background: var(--cream); border: 1px solid var(--sand); border-radius: 6px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: .8rem; }
+    .inscrit-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--charcoal); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; flex-shrink: 0; }
+    .inscrit-info { flex: 1; overflow: hidden; }
+    .inscrit-name { font-weight: 600; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inscrit-meta { font-size: .78rem; color: #999; margin-top: .15rem; }
+    .inscrit-prize { font-size: 1.3rem; }
+
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; text-align: center; padding: 4rem 5%; min-height: auto; }
       .hero-image { display: none; }
       .cats-grid { grid-template-columns: 1fr 1fr; }
       .coupon-container { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
     }
     @media (max-width: 600px) {
       .cats-grid { grid-template-columns: 1fr; }
@@ -567,6 +588,7 @@
     <li><a href="#produits">Boutique</a></li>
     <li><a href="#coupons">Coupons</a></li>
     <li><a href="#categories">Catégories</a></li>
+    <li><a href="#inscritsSection">Participants</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <button class="cart-btn" onclick="toggleCart()">
@@ -790,15 +812,81 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- COUPON MODAL -->
+<!-- COUPON REGISTRATION MODAL -->
 <div class="modal-overlay" id="couponModal">
-  <div class="modal">
-    <div class="modal-icon">🎉</div>
-    <h2>Coupon Réclamé !</h2>
-    <p>Votre coupon <strong>MODE-AVRIL-25</strong> a été enregistré.<br>
-    Utilisez-le dans votre panier pour participer au tirage au sort du mois d'Avril et tenter de gagner une paire de chaussures ou un habit !</p>
-    <button class="modal-close" onclick="closeModal()">Super, merci !</button>
+  <div class="modal" id="modalContent">
+    <!-- STEP 1 : FORM -->
+    <div id="formStep">
+      <div class="modal-icon">🎫</div>
+      <h2>Obtenir mon Coupon</h2>
+      <p style="margin-bottom:1.5rem">Remplissez vos informations pour recevoir votre coupon du mois et participer au tirage au sort !</p>
+      <div class="reg-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom *</label>
+            <input type="text" id="regPrenom" placeholder="Ex: Aminata" />
+          </div>
+          <div class="form-group">
+            <label>Nom *</label>
+            <input type="text" id="regNom" placeholder="Ex: Diallo" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="regEmail" placeholder="votre@email.com" />
+        </div>
+        <div class="form-group">
+          <label>WhatsApp / Téléphone *</label>
+          <input type="tel" id="regTel" placeholder="+229 00 00 00 00" />
+        </div>
+        <div class="form-group">
+          <label>Ville</label>
+          <input type="text" id="regVille" placeholder="Ex: Cotonou" />
+        </div>
+        <div class="form-group">
+          <label>Cadeau préféré 🎁</label>
+          <select id="regCadeau">
+            <option value="">-- Choisir --</option>
+            <option value="chaussures">👟 Paire de chaussures</option>
+            <option value="habit">👗 Habit / Tenue</option>
+            <option value="surprise">🎁 Surprise !</option>
+          </select>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="regAccept" />
+          <label for="regAccept">J'accepte de recevoir le coupon et les offres du mois par email/WhatsApp</label>
+        </div>
+        <div class="form-error" id="formError"></div>
+        <div class="form-btns">
+          <button class="modal-close" onclick="closeModal()" style="background:transparent;color:#999;border:1px solid #ddd">Annuler</button>
+          <button class="modal-close" onclick="submitRegistration()" style="background:var(--charcoal);color:var(--gold)">Obtenir mon coupon →</button>
+        </div>
+      </div>
+    </div>
+    <!-- STEP 2 : SUCCESS -->
+    <div id="successStep" style="display:none">
+      <div class="modal-icon">🎉</div>
+      <h2>Inscription réussie !</h2>
+      <div class="success-coupon">
+        <p style="color:#666;margin-bottom:1rem">Voici votre coupon personnel, <strong id="successName"></strong> :</p>
+        <div class="coupon-ticket" style="justify-content:center;margin-bottom:1rem" onclick="copyCouponPersonal()">
+          <span>🎫</span>
+          <span class="coupon-code" id="personalCode"></span>
+          <button class="coupon-copy">Copier</button>
+        </div>
+        <p style="color:#666;font-size:.9rem;line-height:1.6">Utilisez ce code dans votre panier. Le tirage au sort a lieu le <strong>1er du mois</strong>. Bonne chance ! 🍀</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" style="margin-top:1.5rem">Fermer</button>
+    </div>
   </div>
+</div>
+
+<!-- INSCRITS SECTION (visible uniquement si inscrits) -->
+<div id="inscritsSection" style="display:none; background:var(--white); padding:60px 8%;">
+  <div class="section-label">Participants</div>
+  <h2 class="section-title">Liste des inscrits du mois</h2>
+  <p class="section-sub">Ces personnes participent au tirage au sort de ce mois-ci.</p>
+  <div id="inscritsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:1rem"></div>
 </div>
 
 <script>
@@ -925,7 +1013,13 @@ function applyCoupon() {
   }
 }
 
+// ── REGISTRATION ──
+let inscrits = JSON.parse(localStorage.getItem('modeCoInscrits') || '[]');
+
 function claimCoupon() {
+  document.getElementById('formStep').style.display = 'block';
+  document.getElementById('successStep').style.display = 'none';
+  document.getElementById('formError').textContent = '';
   document.getElementById('couponModal').classList.add('open');
 }
 
@@ -936,6 +1030,58 @@ function closeModal() {
 function copyCoupon() {
   navigator.clipboard?.writeText('MODE-AVRIL-25');
   showToast('📋 Code copié : MODE-AVRIL-25');
+}
+
+function copyCouponPersonal() {
+  const code = document.getElementById('personalCode').textContent;
+  navigator.clipboard?.writeText(code);
+  showToast('📋 Code copié : ' + code);
+}
+
+function generateCode(prenom) {
+  const mois = ['JAN','FEV','MAR','AVR','MAI','JUN','JUL','AOU','SEP','OCT','NOV','DEC'];
+  const m = mois[new Date().getMonth()];
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return prenom.toUpperCase().substring(0,3) + '-' + m + '-' + rand;
+}
+
+function submitRegistration() {
+  const prenom = document.getElementById('regPrenom').value.trim();
+  const nom = document.getElementById('regNom').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const tel = document.getElementById('regTel').value.trim();
+  const ville = document.getElementById('regVille').value.trim();
+  const cadeau = document.getElementById('regCadeau').value;
+  const accept = document.getElementById('regAccept').checked;
+  const errEl = document.getElementById('formError');
+  if (!prenom || !nom) { errEl.textContent = '⚠️ Prénom et nom sont obligatoires.'; return; }
+  if (!email || !email.includes('@')) { errEl.textContent = '⚠️ Email invalide.'; return; }
+  if (!tel) { errEl.textContent = '⚠️ Numéro de téléphone obligatoire.'; return; }
+  if (!accept) { errEl.textContent = '⚠️ Veuillez accepter les conditions.'; return; }
+  if (inscrits.find(function(i){ return i.email === email; })) {
+    errEl.textContent = '⚠️ Cet email est déjà inscrit ce mois-ci.'; return;
+  }
+  errEl.textContent = '';
+  var code = generateCode(prenom);
+  var cadeauMap = { chaussures: '👟', habit: '👗', surprise: '🎁' };
+  var cadeauEmoji = cadeauMap[cadeau] || '🎁';
+  inscrits.push({ prenom: prenom, nom: nom, email: email, tel: tel, ville: ville, cadeau: cadeau, code: code, cadeauEmoji: cadeauEmoji, date: new Date().toLocaleDateString('fr-FR') });
+  localStorage.setItem('modeCoInscrits', JSON.stringify(inscrits));
+  document.getElementById('successName').textContent = prenom;
+  document.getElementById('personalCode').textContent = code;
+  document.getElementById('formStep').style.display = 'none';
+  document.getElementById('successStep').style.display = 'block';
+  renderInscrits();
+}
+
+function renderInscrits() {
+  var section = document.getElementById('inscritsSection');
+  var grid = document.getElementById('inscritsGrid');
+  if (!inscrits.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  grid.innerHTML = inscrits.map(function(i) {
+    return '<div class="inscrit-card"><div class="inscrit-avatar">' + i.prenom[0] + i.nom[0] + '</div><div class="inscrit-info"><div class="inscrit-name">' + i.prenom + ' ' + i.nom + '</div><div class="inscrit-meta">' + (i.ville || 'Inconnu') + ' · ' + i.date + '</div><div class="inscrit-meta" style="color:var(--gold);font-weight:600">' + i.code + '</div></div><div class="inscrit-prize">' + i.cadeauEmoji + '</div></div>';
+  }).join('');
 }
 
 // ── CHECKOUT ──
@@ -975,6 +1121,7 @@ updateCountdown();
 
 // ── INIT ──
 renderProducts();
+renderInscrits();
 </script>
 </body>
 </html>
